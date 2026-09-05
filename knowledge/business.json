@@ -1,0 +1,12 @@
+{
+  "businessName": "SUP Cape Town",
+  "activity": "Stand-up paddleboarding experiences and lessons in Cape Town",
+  "location": "Cape Town, South Africa. Send the exact launch point and meeting instructions after a booking is confirmed.",
+  "hours": "Daily, subject to weather and availability. The team confirms the available session times when booking.",
+  "pricing": "Pricing depends on the session type, duration, and group size. Ask the team for the current quote for your group.",
+  "parking": "Parking availability depends on the chosen launch location. The team shares the best parking guidance with the booking details.",
+  "groupBookings": "Groups are welcome. Tell us the number of adults and children and we will check availability and provide the correct quote.",
+  "bookingFields": ["name", "date", "time", "adults", "children"],
+  "timezone": "Africa/Johannesburg",
+  "confirmationNote": "Bookings are subject to weather, safety conditions, and final confirmation by SUP Cape Town."
+}
