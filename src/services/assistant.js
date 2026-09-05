@@ -9,11 +9,18 @@ const sessions = new Map();
 
 export async function handleIncomingMessage({ from, text, messageId }) {
   await supabaseService.saveMessage({ whatsapp_message_id: messageId, phone_number: from, direction: 'inbound', message_type: 'text', body: text });
+  if (/cancel|start over|reset/i.test(text)) {
+    sessions.delete(from);
+    return sendAndStore(from, 'Booking cancelled. How can I help you today?');
+  }
   const session = sessions.get(from) || { booking: emptyBooking() };
   const missingBeforeMessage = firstMissingField(session.booking);
   const understood = await understandMessage(text);
-  if (understood.intent !== 'booking' && !sessions.has(from)) return sendAndStore(from, await answerFaq(text));
-  session.booking = mergeBooking(session.booking, { ...understood.updates, ...parseFieldAnswer(missingBeforeMessage, text) });
+  console.log('Understood:', understood);
+  if (understood.intent !== 'booking' && (!sessions.has(from) || isFaqQuestion(text))) return sendAndStore(from, await answerFaq(text));
+  const fieldAnswer = Object.keys(understood.updates || {}).length > 0 ? {} : parseFieldAnswer(missingBeforeMessage, text);
+  session.booking = mergeBooking(session.booking, { ...understood.updates, ...fieldAnswer });
+  console.log('Booking after merge:', session.booking);
   sessions.set(from, session);
   const missing = firstMissingField(session.booking);
   if (missing) {
@@ -34,4 +41,8 @@ async function sendAndStore(to, body) {
   const sent = await sendWhatsAppText(to, body);
   await supabaseService.saveMessage({ whatsapp_message_id: sent.id, phone_number: to, direction: 'outbound', message_type: 'text', body });
   return sent;
+}
+
+function isFaqQuestion(text) {
+  return /price|pricing|cost|rate|how much|hour|open|when|where|location|address|park|parking|group|team|many people|weather|lesson|session/i.test(text);
 }
