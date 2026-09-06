@@ -3,6 +3,13 @@ import { config } from '../config.js';
 import { handleIncomingMessage } from '../services/assistant.js';
 
 export const webhookRouter = Router();
+const processedMessageIds = new Set();
+
+export function shouldProcessMessage(messageId) {
+  if (processedMessageIds.has(messageId)) return false;
+  processedMessageIds.add(messageId);
+  return true;
+}
 
 webhookRouter.use((req, _res, next) => {
   console.log(`[Webhook] ${req.method} ${req.originalUrl} received`);
@@ -29,6 +36,10 @@ async function processWebhook(body) {
     for (const change of entry.changes || []) {
       for (const message of change.value?.messages || []) {
         if (message.type !== 'text' || !message.from || !message.id) continue;
+        if (!shouldProcessMessage(message.id)) {
+          console.log(`[Webhook] Ignoring duplicate message: ${message.id}`);
+          continue;
+        }
         console.log('[Webhook] Sender phone number:', message.from);
         console.log('[Webhook] Message text:', message.text.body);
         await handleIncomingMessage({ from: message.from, text: message.text.body, messageId: message.id });

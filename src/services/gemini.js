@@ -41,7 +41,10 @@ ${text}
     const result = await model.generateContent(prompt);
     const parsed = JSON.parse(result.response.text().replace(/^```json\s*|\s*```$/g, '').trim());
     console.log('Gemini extracted:', parsed);
-    return { intent: parsed.intent || fallback.intent, updates: { ...fallback.updates, ...(parsed.updates || {}) } };
+    const updates = { ...fallback.updates, ...(parsed.updates || {}) };
+    if (fallback.updates.adults !== undefined) updates.adults = fallback.updates.adults;
+    if (fallback.updates.children !== undefined) updates.children = fallback.updates.children;
+    return { intent: parsed.intent || fallback.intent, updates };
   } catch (error) {
     console.error('Gemini understanding failed; using local parser:', error.message);
     return fallback;

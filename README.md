@@ -33,7 +33,7 @@ Create a Gemini API key in Google AI Studio and set `GEMINI_API_KEY` in `.env`. 
 4. Share the target Google Calendar with the service-account email with permission to make changes.
 5. Set `GOOGLE_CALENDAR_ID`.
 
-The event duration is two hours and uses `Africa/Johannesburg` by default. Change this in `.env` if SUP Cape Town uses another timezone.
+Each booking creates a one-hour calendar event and uses `Africa/Johannesburg` by default. Change this in `.env` if SUP Cape Town uses another timezone.
 
 ## 5. Connect WhatsApp Cloud API
 
